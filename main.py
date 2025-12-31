@@ -3,7 +3,7 @@ from tkinter import ttk
 from datetime import datetime
 
 from db import init_db
-from models import get_assignments, get_courses
+from models import get_assignments, get_courses, toggle_completed
 
 
 ctk.set_appearance_mode("system")
@@ -11,7 +11,7 @@ ctk.set_default_color_theme("blue")
 
 app = ctk.CTk()
 app.title("Study Planner")
-app.geometry("1000x600")
+app.geometry("1050x620")
 
 
 # ---------- Sidebar ----------
@@ -36,10 +36,10 @@ content_label = ctk.CTkLabel(content, text="Assignments", font=("Arial", 18))
 content_label.pack(pady=15)
 
 
-# ---------- Assignment Table ----------
+# ---------- Table ----------
 table = ttk.Treeview(
     content,
-    columns=("title", "course", "due", "priority"),
+    columns=("title", "course", "due", "priority", "done"),
     show="headings",
     height=14
 )
@@ -48,21 +48,24 @@ table.heading("title", text="Title")
 table.heading("course", text="Course")
 table.heading("due", text="Due Date")
 table.heading("priority", text="Priority")
+table.heading("done", text="Completed")
 
 table.column("title", width=260)
-table.column("course", width=180)
-table.column("due", width=140)
-table.column("priority", width=120)
+table.column("course", width=160)
+table.column("due", width=130)
+table.column("priority", width=100)
+table.column("done", width=110)
 
 table.pack(fill="both", expand=True, padx=10, pady=10)
 
 
-# ---------- Load table ----------
+# ---------- Load Table ----------
 def load_table():
     table.delete(*table.get_children())
 
-    for title, course, due, priority in get_assignments():
-        # convert stored date -> display date
+    for row in get_assignments():   # row now includes ID + completed flag
+        _id, title, course, due, priority, done = row
+
         if due:
             try:
                 d = datetime.strptime(due, "%Y-%m-%d")
@@ -72,7 +75,23 @@ def load_table():
         else:
             due_display = ""
 
-        table.insert("", "end", values=(title, course, due_display, priority))
+        done_text = "✔" if done else ""
+
+        table.insert("", "end", iid=_id,
+                     values=(title, course, due_display, priority, done_text))
+
+
+# ---------- Toggle completion ----------
+def on_row_double_click(event):
+    selected = table.focus()
+    if not selected:
+        return
+
+    toggle_completed(int(selected))
+    load_table()
+
+
+table.bind("<Double-1>", on_row_double_click)
 
 
 # ---------- Add Assignment Popup ----------
@@ -87,7 +106,7 @@ def open_add_assignment():
     entry_title = ctk.CTkEntry(popup, width=260)
     entry_title.pack()
 
-    # ---- course dropdown ----
+    # dropdown
     ctk.CTkLabel(popup, text="Course").pack(pady=5)
 
     course_list = [c[1] for c in get_courses()]
@@ -97,9 +116,7 @@ def open_add_assignment():
     dropdown = ctk.CTkOptionMenu(popup, values=course_list, variable=course_var)
     dropdown.pack()
 
-    # input box shows ONLY if "add new course" chosen
     entry_new_course = ctk.CTkEntry(popup, width=260)
-    
 
     def on_course_change(choice):
         if choice == "➕ Add new course":
@@ -109,24 +126,23 @@ def open_add_assignment():
 
     dropdown.configure(command=on_course_change)
 
-    # ---- due date ----
     ctk.CTkLabel(popup, text="Due Date (DD/MM/YY)").pack(pady=5)
     entry_due = ctk.CTkEntry(popup, width=260)
     entry_due.pack()
 
-    # ---- priority ----
     ctk.CTkLabel(popup, text="Priority (1-5)").pack(pady=5)
     entry_priority = ctk.CTkEntry(popup, width=260)
     entry_priority.pack()
 
     def save():
+        from models import add_assignment, add_course, get_courses
+
         title = entry_title.get()
         selected = course_var.get()
         new_course = entry_new_course.get()
         due_input = entry_due.get().strip()
         priority = entry_priority.get() or 1
 
-        # convert date
         due_for_db = ""
         if due_input:
             try:
@@ -135,7 +151,6 @@ def open_add_assignment():
             except:
                 due_for_db = due_input
 
-        # resolve course id
         if selected == "➕ Add new course":
             if new_course:
                 add_course(new_course)
