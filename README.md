@@ -1,4 +1,4 @@
-# 📘 Study Planner
+# Study Planner
 
 A simple desktop **study planner app** built with Python and CustomTkinter.
 
