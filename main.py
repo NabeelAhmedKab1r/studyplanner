@@ -46,6 +46,40 @@ ctk.CTkButton(
     width=180
 ).pack(pady=10)
 
+# ---------- THEME TOGGLE (bottom-left centered) ----------
+bottom_area = ctk.CTkFrame(sidebar, fg_color="transparent")
+bottom_area.pack(side="bottom", fill="x", pady=10)
+
+theme_label = ctk.CTkLabel(
+    bottom_area,
+    text="Theme",
+    font=("Arial", 14, "bold"),
+    anchor="center",
+    justify="center"
+)
+theme_label.pack(pady=(0, 3))
+
+def toggle_theme():
+    if theme_switch.get() == 1:
+        ctk.set_appearance_mode("dark")
+        theme_switch.configure(text="🌙")
+    else:
+        ctk.set_appearance_mode("light")
+        theme_switch.configure(text="☀️")
+
+theme_switch = ctk.CTkSwitch(
+    bottom_area,
+    text="🌙",
+    command=toggle_theme
+)
+
+theme_switch.select()
+theme_switch.place(relx=0.6, anchor="center", rely=0.55)
+
+
+
+
+
 
 # ---------- STARTUP ----------
 init_db()
