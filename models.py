@@ -54,3 +54,21 @@ def toggle_completed(assign_id):
     """, (assign_id,))
     conn.commit()
     conn.close()
+def delete_assignment(assign_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM assignments WHERE id = ?", (assign_id,))
+    conn.commit()
+    conn.close()
+
+
+def update_assignment(assign_id, title, course_id, due_date, priority):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        UPDATE assignments
+        SET title = ?, course_id = ?, due_date = ?, priority = ?
+        WHERE id = ?
+    """, (title, course_id, due_date, priority, assign_id))
+    conn.commit()
+    conn.close()
