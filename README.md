@@ -6,7 +6,7 @@ It helps students keep track of assignments, deadlines, and priorities — with 
 
 ---
 
-## ✨ Features
+## Features
 
 - ✔️ Add, edit, delete assignments  
 - ✔️ Mark assignments as completed (double-click)  
@@ -21,7 +21,7 @@ More polish than a typical school project — but still lightweight and easy to 
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Component | Purpose |
 |-----------|--------|
