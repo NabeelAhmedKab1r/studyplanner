@@ -115,24 +115,36 @@ table.pack(fill="both", expand=True, pady=5, padx=5)
 def load_table():
     table.delete(*table.get_children())
 
-    for row in get_assignments():
-        _id, title, course, due, priority, done = row
+for row in get_assignments():
+    _id, title, course, due, priority, done = row
 
-        if due:
-            try:
-                d = datetime.strptime(due, "%Y-%m-%d")
-                due_display = d.strftime("%d/%m/%y")
-            except:
-                due_display = due
-        else:
-            due_display = ""
+    due_display = ""
+    tag = ""
 
-        table.insert(
-            "",
-            "end",
-            iid=_id,
-            values=(title, course, due_display, priority, "✔" if done else "")
-        )
+    if due:
+        try:
+            d = datetime.strptime(due, "%Y-%m-%d")
+            due_display = d.strftime("%d/%m/%y")
+
+            today = datetime.today().date()
+            diff = (d.date() - today).days
+
+            if diff < 0:
+                tag = "overdue"
+            elif diff <= 3:
+                tag = "soon"
+
+        except:
+            due_display = due
+
+    table.insert(
+        "",
+        "end",
+        iid=_id,
+        values=(title, course, due_display, priority, "✔" if done else ""),
+        tags=(tag,)
+    )
+
 
 
 # ---------- Toggle Completed ----------
