@@ -23,7 +23,6 @@ def init_db():
             course_id INTEGER,
             due_date TEXT,
             priority INTEGER,
-            completed INTEGER DEFAULT 0,
             FOREIGN KEY(course_id) REFERENCES courses(id)
         )
     """)

@@ -25,11 +25,13 @@ def add_assignment(title, course_id, due_date, priority):
     conn.commit()
     conn.close()
 
-def get_upcoming_assignments():
+
+
+def get_assignments():
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
-        SELECT a.id, a.title, c.name, a.due_date, a.priority, a.completed
+        SELECT a.title, c.name, a.due_date, a.priority
         FROM assignments a
         LEFT JOIN courses c ON a.course_id = c.id
         ORDER BY a.due_date
@@ -37,3 +39,4 @@ def get_upcoming_assignments():
     rows = cur.fetchall()
     conn.close()
     return rows
+
