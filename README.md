@@ -34,6 +34,9 @@ More polish than a typical school project — but still lightweight and easy to 
 
 ## Screenshots
 
-![Study Planner Screenshot](screenshots/app.png)
+### Dark Mode
+![Study Planner Dark Mode](screenshots/study%20planner%20page1.png)
 
+### Light Mode
+![Study Planner Light Mode](screenshots/study%20planner%20page%202.png)
 
